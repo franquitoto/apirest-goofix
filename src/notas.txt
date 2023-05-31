@@ -1,0 +1,37 @@
+****************** Pasos para manejarnos con autenticacion de usuarios ************************************
+Teniendo la api avanzada con:
+1) El servidor de express levantado.
+2) La base de datos configurada.
+3) Los esquemas de las colecciones de la base de datos configurado.
+4) Los endpoints para manejarse con los esquemas creados (si son productos, los endpoints get, get:id, post, put:id y delete:id)
+
+una vez que tenemos todo eso, empezamos.
+1) En la carpeta donde manejamos las rutas (routes) creamos un archivo de autenticacion.routes donde en ella tendremos los endpoints:
+ /signin para loguearse
+ /signup para registrarse
+
+ recordemos que debemos decirle a express que utilice estas rutas con un 'api/auth'
+
+2) En la carpeta models vamos a crear el esquema para el modelo de usuario
+ a) Los campos para este caso van a ser: username, email, password, rol
+ b) El campo rol, va a ser un array, ya que un usuario puede tener varios roles.
+ c) El rol por si mismo va a ser otra colecion de la base de datos, que por defecto al arrancar la aplicacion va a crear 2 roles(o los necesarios): user, admin.
+    * Esto lo creamos en libs/aliniciar.js
+    * Al crear los usuarios debemos relacionar los roles con este. 
+ d) Al usuario debemos crearle dos metodos: Uno para encriptar la contraseña y otro para comparar la contraseña ingresada por el usuario con la que esta en la db
+
+3) Los endpoints mencionados en el punto 1 no los vamos a manejar desde el archivo creado en autenticacion.routes, vamos a crear en la carpeta controllers un archivo autenticacion.controllers
+  a)En este archivo vamos a crear  funciones para crear un usuario en el caso del signup
+    * Cada vez que generemos un usuario vamos a entregarle un token que dure 24 horas para que dependiendo su rol tenga acceso o no a los distintos endpoints
+    * La funcion para generar el token nos va a pedir un codigo que nosotros vamos a configurar en congfig.js con la propiedad SECRET
+    * Al crear el usuario vamos a relacionar el rol que nos pase con los roles de la db, si ninguno coincide o no lo envian, le enviamos el rol user por defecto
+  b)En este archivo vamos a crear funciones para autenticar un usuario en el caso del signin
+    * Cada vez que un usuario quiera ingresar vamos a comparar el email y la contraseña que nos da
+    * Si alguno de estos dos datos es incorrecto no le vamos a dar ni token ni acceso
+    * Si los datos son correctos le vamos a devolver un token por 24 horas
+
+4) Una vez que los usuarios creados o los usuarios que ingresan tienen un token, debemos crear los middllewares para corroborar el nivel de acceso que tienen esos usuarios
+    * en middllewares/ vamos a crar los archivos .js para corroborar este nivel de acceso
+    * authJwt: vamos a verificar los token que nos envian y el nivel de acceso del usuario
+    * verifySignup: aqui vamos a verificar que los usuarios y email sean unicos
+  
