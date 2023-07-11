@@ -5,6 +5,8 @@ import * as verifySignup from '../middlewares/verifySignup';
 
 const router = Router();
 
+// consultar lista de usuarios
+router.get('/', userCtrl.obtenerUsuarios)
 router.post('/',[authCtrl.verifyToken, authCtrl.isAdmin, verifySignup.checkDuplicateUserOrEmail] , userCtrl.createUser)
 
 export default router;

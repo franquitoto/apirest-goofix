@@ -11,6 +11,8 @@ import pkjson from '../package.json';
 import databases from './databases';
 import { createRoles } from "./libs/aliniciar";
 import dotenv from 'dotenv';
+let cors = require("cors");
+
 
 
 console.log(process.env.PORT)
@@ -36,6 +38,9 @@ const storage = multer.diskStorage({
 
 
 //Middlewares
+app.use(express.urlencoded())
+app.use(express.json());
+app.use(cors());
 app.use((error, req, res, next) => {
   console.error(error);
   res.status(500).send('Error en la ruta');

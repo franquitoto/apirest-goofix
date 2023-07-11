@@ -8,7 +8,7 @@ import * as authJwt from "../middlewares/authJwt";
 const router = express.Router()
 // Vamos a definir las rutas
 //Ruta para obtener todos los productos
-router.get("/", [authJwt.verifyToken, authJwt.isAdmin] , productosCtrl.obtenerProductos)
+router.get("/", productosCtrl.obtenerProductos)
 
 // Ruta para obtener un producto mediante ID
 router.get("/:id", productosCtrl.obtenerProductoId)
@@ -24,6 +24,17 @@ router.put("/:id", productosCtrl.actualizarProducto)
 
 // Ruta para eliminar un producto
 router.delete("/:id",productosCtrl.eliminarProducto)
+
+// Prueba
+router.post("/prueba", (req, res) =>{
+  try{
+    console.log(req.body.nombre)
+    res.json('informacion recibida')
+  }catch(error){
+    res.json(error)
+  }
+  
+})
 
 // Exportamos el router
 export default router;

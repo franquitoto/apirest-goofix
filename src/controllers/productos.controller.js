@@ -1,10 +1,14 @@
+import { json } from "express";
 import Producto from "../models/productos";
+import fs from 'fs';
+import path from 'path'
+
 
 // Funcion para obtener todos los productos
 export const obtenerProductos = async (req, res) => {
   try {
     const productos = await Producto.find();
-    res.status(200).json({ productos });
+    res.status(200).json({productos});
   } catch (error) {
     res.status(500).json({
       Mensaje: "Hubo un error al obtener los productos",
@@ -17,6 +21,8 @@ export const obtenerProductos = async (req, res) => {
 export const obtenerProductoId = async (req, res) => {
   try {
     const producto = await Producto.findById(req.params.id);
+    
+    
     res.status(200).json(producto);
   } catch (error) {
     res.status(500).json({
@@ -29,9 +35,18 @@ export const obtenerProductoId = async (req, res) => {
 // Funcion para cargar un nuevo producto
 export const cargarProducto = async (req, res) => {
   try {
+    const nombreArchivo = req.file.filename;
+    const rutaArchivo = req.file.path;
+    console.log(nombreArchivo)
+    const nuevaImagen = {
+      urlImg: `http://localhost:3000/${rutaArchivo.slice(49, 70)}`,
+      nombreImg: nombreArchivo,
+      pathImg: rutaArchivo.slice(49, 70),
+    };
+    console.log(nuevaImagen);
+
     const nuevoProducto =
-      new Producto() |
-      {
+      new Producto({
         nombre: req.body.nombre,
         categoria: req.body.categoria,
         precio: req.body.precio,
@@ -40,11 +55,13 @@ export const cargarProducto = async (req, res) => {
         capacidad: req.body.capacidad,
         marca: req.body.marca,
         color: req.body.color,
-        cantidad: req.body.cantidad,
-      };
+        imagen: nuevaImagen
+      }) 
+      
     const productoGuardado = await nuevoProducto.save();
     res.status(201).json(productoGuardado);
   } catch (error) {
+    console.log(error)
     res.status(500).json({
       Mensaje: "Error al cargar producto",
       error,
@@ -54,9 +71,23 @@ export const cargarProducto = async (req, res) => {
 
 // Funcion para cargar una imagen a un producto ya creado
 export const cargarImagen = async (req, res) => {
+  
   try {
     const nombreArchivo = req.file.filename;
     const rutaArchivo = req.file.path;
+    console.log(nombreArchivo)
+
+    const producto = await Producto.findById(req.params.id);
+    const rutaArchivo2 = path.join(__dirname, `../public/img/${producto.imagen.nombreImg}`);
+
+fs.unlink(rutaArchivo2, (err) => {
+  if (err) {
+    console.error(err);
+    return;
+  }
+  console.log('El archivo ha sido eliminado correctamente. ',rutaArchivo2);
+});
+    
     const nuevaImagen = {
       urlImg: `http://localhost:3000/${rutaArchivo.slice(49, 70)}`,
       nombreImg: nombreArchivo,
@@ -64,10 +95,10 @@ export const cargarImagen = async (req, res) => {
     };
     console.log(nuevaImagen);
     await Producto.findByIdAndUpdate(req.params.id, { imagen: nuevaImagen });
-    res.json("guardado");
+    res.json(producto.imagen.nombreImg);
   } catch (err) {
     res.status(500).json({
-      Mensaje: "Error al cargar la imagen0",
+      Mensaje: "Error al cargar la imagen",
       err,
     });
   }
