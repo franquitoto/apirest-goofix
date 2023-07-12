@@ -10,7 +10,7 @@ const productosSchema = new Schema({
   categoria: {
     type: String,
     // Con esto nos aseguramos de que al crear un producto tenga bien la categoria
-    enum: ['celulares', 'accesorios', 'computadoras'],
+    enum: ['celulares', 'accesorios', 'fundas'],
     required: true,
   },
   precio: {

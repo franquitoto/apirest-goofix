@@ -25,16 +25,8 @@ router.put("/:id", productosCtrl.actualizarProducto)
 // Ruta para eliminar un producto
 router.delete("/:id",productosCtrl.eliminarProducto)
 
-// Prueba
-router.post("/prueba", (req, res) =>{
-  try{
-    console.log(req.body.nombre)
-    res.json('informacion recibida')
-  }catch(error){
-    res.json(error)
-  }
-  
-})
+
+
 
 // Exportamos el router
 export default router;
